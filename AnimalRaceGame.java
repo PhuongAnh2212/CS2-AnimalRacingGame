@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class AnimalRaceGame extends JFrame {
-    private JLabel Player_1;
-    private JLabel Player_2;
+    // private JLabel Player_1;
+    // private JLabel Player_2;
     private JLabel countdown;
 
     public AnimalRaceGame(String player_1_Animal, String player_2_Animal) {
