@@ -34,7 +34,7 @@ public class StartMenu extends JFrame {
             String player2Animal = (String) player2Combo.getSelectedItem();
         
             // Start the game (you'll create this class)
-            // new AnimalRaceGame(player1Animal, player2Animal);
+            new AnimalRaceGame(player1Animal, player2Animal);
         
             // Close this menu
             dispose();
