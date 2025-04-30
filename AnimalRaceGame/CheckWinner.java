@@ -1,3 +1,5 @@
+package AnimalRaceGame;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,6 +27,6 @@ public class CheckWinner {
 
     private void resetGame() {
         frame.dispose();
-        new StartMenu(); // Make sure StartMenu is properly implemented
+        new StartMenu();
     }
 }
