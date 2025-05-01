@@ -67,17 +67,6 @@ public class AnimalRaceGame extends JFrame {
                         // Bắt đầu timer di chuyển
                         checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
 
-                        moveTimer = new Timer(100, e1 -> {
-                            if (!isPlayerFrozen(1)) {
-                                player1Label.setLocation(player1Label.getX() + 5, player1Label.getY());
-                            }
-                            if (!isPlayerFrozen(2)) {
-                                player2Label.setLocation(player2Label.getX() + 5, player2Label.getY());
-                            }
-                            checkWinner.check();
-                        });
-                        moveTimer.start();
-
                     });
                     removeLabelTimer.setRepeats(false);
                     removeLabelTimer.start();
@@ -86,6 +75,29 @@ public class AnimalRaceGame extends JFrame {
         });
 
         countdownTimer.start();
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                int key = e.getKeyCode();
+
+                // Player 1: dùng phím A
+                if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
+                    player1Label.setLocation(player1Label.getX() + 10, player1Label.getY());
+                }
+
+                // Player 2: dùng phím L
+                if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
+                    player2Label.setLocation(player2Label.getX() + 10, player2Label.getY());
+                }
+
+                checkWinner.check();
+            }
+        });
+        setFocusable(true);
+        requestFocusInWindow();
+
+
     }
 
     public void freezePlayer(int playerNum) {
