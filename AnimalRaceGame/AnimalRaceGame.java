@@ -1,9 +1,6 @@
 package AnimalRaceGame;
+
 import javax.swing.*;
-
-// import CheckWinner;
-// import ObstacleManager;
-
 import java.awt.*;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -16,7 +13,10 @@ public class AnimalRaceGame extends JFrame {
     private boolean p2Frozen = false;
     private ObstacleManager obstacleManager;
     private CheckWinner checkWinner;
-    private Timer moveTimer;
+    private MysteryBox mysteryBox;
+    private Timer mysteryBoxTimer;
+    private boolean p1Invincible = false;
+    private boolean p2Invincible = false;
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
         setTitle("Animal Race Game");
@@ -46,6 +46,7 @@ public class AnimalRaceGame extends JFrame {
         setVisible(true);
 
         Timer countdownTimer = new Timer(1000, null);
+
         countdownTimer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!countdownQueue.isEmpty()) {
@@ -66,7 +67,8 @@ public class AnimalRaceGame extends JFrame {
 
                         // Bắt đầu timer di chuyển
                         checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
-
+                        mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBox());
+                        mysteryBoxTimer.start();
                     });
                     removeLabelTimer.setRepeats(false);
                     removeLabelTimer.start();
@@ -76,6 +78,10 @@ public class AnimalRaceGame extends JFrame {
 
         countdownTimer.start();
 
+        // Add this after spawnTimer and before keyListener
+        mysteryBoxTimer = new Timer(5000, ev -> spawnMysteryBox());
+        mysteryBoxTimer.start();
+
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -83,12 +89,19 @@ public class AnimalRaceGame extends JFrame {
 
                 // Player 1: dùng phím A
                 if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
-                    player1Label.setLocation(player1Label.getX() + 10, player1Label.getY());
+                    movePlayer(1, 10); // Move Player 1
                 }
 
                 // Player 2: dùng phím L
                 if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
-                    player2Label.setLocation(player2Label.getX() + 10, player2Label.getY());
+                    movePlayer(2, 10); // Move Player 2
+                }
+                if (mysteryBox != null) {
+                    if (player1Label.getBounds().intersects(mysteryBox.getBounds())) {
+                        applyMysteryEffect(1);
+                    } else if (player2Label.getBounds().intersects(mysteryBox.getBounds())) {
+                        applyMysteryEffect(2);
+                    }
                 }
 
                 checkWinner.check();
@@ -96,8 +109,27 @@ public class AnimalRaceGame extends JFrame {
         });
         setFocusable(true);
         requestFocusInWindow();
+    }
 
+    private void spawnMysteryBox() {
+        if (mysteryBox != null) {
+            remove(mysteryBox);
+        }
 
+        mysteryBox = new MysteryBox();
+        add(mysteryBox);
+        repaint();
+    }
+
+    private void applyMysteryEffect(int playerNumber) {
+        if (mysteryBox == null) return;
+
+        MysteryEffect effect = mysteryBox.getEffect();
+        effect.apply(this, playerNumber);
+
+        remove(mysteryBox);
+        mysteryBox = null;
+        repaint();
     }
 
     public void freezePlayer(int playerNum) {
@@ -114,5 +146,30 @@ public class AnimalRaceGame extends JFrame {
 
     public boolean isPlayerFrozen(int playerNum) {
         return (playerNum == 1) ? p1Frozen : p2Frozen;
+    }
+
+    // Move player method (for power-ups like speed boost)
+    public void movePlayer(int playerNumber, int distance) {
+        if (playerNumber == 1) {
+            player1Label.setLocation(player1Label.getX() + distance, player1Label.getY());
+        } else if (playerNumber == 2) {
+            player2Label.setLocation(player2Label.getX() + distance, player2Label.getY());
+        }
+    }
+
+    // Set player invincible method (for invincibility power-up)
+    public void setPlayerInvincible(int playerNumber, boolean isInvincible) {
+        if (playerNumber == 1) {
+            p1Invincible = isInvincible;
+            // You can add additional logic to change the appearance of Player 1 (e.g., change the label color, etc.)
+        } else if (playerNumber == 2) {
+            p2Invincible = isInvincible;
+            // Similarly, you can modify Player 2's appearance or behavior
+        }
+    }
+
+    // Additional methods to check if players are invincible or frozen (if needed)
+    public boolean isPlayerInvincible(int playerNumber) {
+        return (playerNumber == 1) ? p1Invincible : p2Invincible;
     }
 }
