@@ -9,17 +9,15 @@ import java.awt.event.*;
 
 public class AnimalRaceGame extends JFrame {
     private JLabel player1Label, player2Label, countdown;
-    private JLabel player1ScoreLabel, player2ScoreLabel;
     private boolean p1Frozen = false;
     private boolean p2Frozen = false;
     private ObstacleManager obstacleManager;
     private CheckWinner checkWinner;
-    private MysteryBox mysteryBox;
     private Timer mysteryBoxTimer;
     private boolean p1Invincible = false;
     private boolean p2Invincible = false;
-    private int player1Score = 0;
-    private int player2Score = 0;
+
+    private MysteryBox box1, box2;
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
         setTitle("Animal Race Game");
@@ -28,23 +26,15 @@ public class AnimalRaceGame extends JFrame {
         setLayout(null);
         getContentPane().setBackground(Color.PINK);
 
-        player1Label = new JLabel("Player 1: " + p1Animal);
+        player1Label = new JLabel("dog " + p1Animal);
         player1Label.setFont(new Font("Arial", Font.PLAIN, 20));
-        player1Label.setBounds(50, 100, 200, 50);
+        player1Label.setBounds(50, 100, 100, 50);
         add(player1Label);
 
-        player2Label = new JLabel("Player 2: " + p2Animal);
+        player2Label = new JLabel("cat " + p2Animal);
         player2Label.setFont(new Font("Arial", Font.PLAIN, 20));
-        player2Label.setBounds(50, 150, 200, 50);
+        player2Label.setBounds(50, 200, 100, 50);
         add(player2Label);
-
-        player1ScoreLabel = new JLabel("Score: 0");
-        player1ScoreLabel.setBounds(260, 100, 100, 50);
-        add(player1ScoreLabel);
-
-        player2ScoreLabel = new JLabel("Score: 0");
-        player2ScoreLabel.setBounds(260, 150, 100, 50);
-        add(player2ScoreLabel);
 
         countdown = new JLabel("Ready?");
         countdown.setFont(new Font("Arial", Font.BOLD, 40));
@@ -57,12 +47,10 @@ public class AnimalRaceGame extends JFrame {
         setVisible(true);
 
         Timer countdownTimer = new Timer(1000, null);
-
         countdownTimer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!countdownQueue.isEmpty()) {
-                    String value = countdownQueue.poll();
-                    countdown.setText(value);
+                    countdown.setText(countdownQueue.poll());
                     repaint();
                 } else {
                     countdownTimer.stop();
@@ -70,14 +58,14 @@ public class AnimalRaceGame extends JFrame {
                         remove(countdown);
                         repaint();
 
+                        // Start game logic
                         obstacleManager = new ObstacleManager(AnimalRaceGame.this);
                         obstacleManager.startObstacleTimer(player1Label, player2Label);
 
-                        Timer spawnTimer = new Timer(3000, ev -> obstacleManager.spawnObstacle());
-                        spawnTimer.start();
-
                         checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
-                        mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBox());
+
+                        // Spawn mystery boxes regularly
+                        mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBoxes());
                         mysteryBoxTimer.start();
                     });
                     removeLabelTimer.setRepeats(false);
@@ -85,12 +73,7 @@ public class AnimalRaceGame extends JFrame {
                 }
             }
         });
-
         countdownTimer.start();
-
-        // Start mystery box spawn timer
-        mysteryBoxTimer = new Timer(5000, ev -> spawnMysteryBox());
-        mysteryBoxTimer.start();
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -98,19 +81,21 @@ public class AnimalRaceGame extends JFrame {
                 int key = e.getKeyCode();
 
                 if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
-                    movePlayer(1, 10); // Move Player 1
+                    movePlayer(1, 10);
                 }
 
                 if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
-                    movePlayer(2, 10); // Move Player 2
+                    movePlayer(2, 10);
                 }
 
-                if (mysteryBox != null) {
-                    if (player1Label.getBounds().intersects(mysteryBox.getBounds())) {
-                        applyMysteryEffect(1);
-                    } else if (player2Label.getBounds().intersects(mysteryBox.getBounds())) {
-                        applyMysteryEffect(2);
-                    }
+                if (box1 != null && player1Label.getBounds().intersects(box1.getBounds())) {
+                    applyMysteryEffect(1, box1);
+                    box1 = null;
+                }
+
+                if (box2 != null && player2Label.getBounds().intersects(box2.getBounds())) {
+                    applyMysteryEffect(2, box2);
+                    box2 = null;
                 }
 
                 checkWinner.check();
@@ -121,34 +106,42 @@ public class AnimalRaceGame extends JFrame {
         requestFocusInWindow();
     }
 
-    private void spawnMysteryBox() {
-        if (mysteryBox != null) {
-            remove(mysteryBox);
-        }
+    private void spawnMysteryBoxes() {
+        if (box1 != null) remove(box1);
+        if (box2 != null) remove(box2);
 
-        mysteryBox = new MysteryBox();
-        add(mysteryBox);
+        // Spawn for Player 1
+        int p1X = player1Label.getX();
+        int p1Y = player1Label.getY();
+        box1 = new MysteryBox();
+        box1.setLocation(Math.min(p1X + 150, 700), p1Y + 10);
+        add(box1);
+
+        // Spawn for Player 2
+        int p2X = player2Label.getX();
+        int p2Y = player2Label.getY();
+        box2 = new MysteryBox();
+        box2.setLocation(Math.min(p2X + 150, 700), p2Y + 10);
+        add(box2);
+
         repaint();
     }
 
-    private void applyMysteryEffect(int playerNumber) {
-        if (mysteryBox == null) return;
-
-        MysteryEffect effect = mysteryBox.getEffect();
+    private void applyMysteryEffect(int playerNumber, MysteryBox box) {
+        if (box == null) return;
+        MysteryEffect effect = box.getEffect();
         effect.apply(this, playerNumber);
-
-        remove(mysteryBox);
-        mysteryBox = null;
+        remove(box);
         repaint();
     }
 
     public void freezePlayer(int playerNum) {
         if (playerNum == 1) p1Frozen = true;
-        if (playerNum == 2) p2Frozen = true;
+        else if (playerNum == 2) p2Frozen = true;
 
         Timer t = new Timer(2000, e -> {
             if (playerNum == 1) p1Frozen = false;
-            if (playerNum == 2) p2Frozen = false;
+            else if (playerNum == 2) p2Frozen = false;
         });
         t.setRepeats(false);
         t.start();
@@ -161,36 +154,17 @@ public class AnimalRaceGame extends JFrame {
     public void movePlayer(int playerNumber, int distance) {
         if (playerNumber == 1) {
             player1Label.setLocation(player1Label.getX() + distance, player1Label.getY());
-            player1Score += distance;
-            player1ScoreLabel.setText("Score: " + player1Score);
         } else if (playerNumber == 2) {
             player2Label.setLocation(player2Label.getX() + distance, player2Label.getY());
-            player2Score += distance;
-            player2ScoreLabel.setText("Score: " + player2Score);
         }
     }
 
     public void setPlayerInvincible(int playerNumber, boolean isInvincible) {
-        if (playerNumber == 1) {
-            p1Invincible = isInvincible;
-        } else if (playerNumber == 2) {
-            p2Invincible = isInvincible;
-        }
+        if (playerNumber == 1) p1Invincible = isInvincible;
+        else if (playerNumber == 2) p2Invincible = isInvincible;
     }
 
     public boolean isPlayerInvincible(int playerNumber) {
         return (playerNumber == 1) ? p1Invincible : p2Invincible;
-    }
-
-    public void doublePlayerPoints(int playerNumber) {
-        if (playerNumber == 1) {
-            player1Score *= 2;
-            player1ScoreLabel.setText("Score: " + player1Score);
-            System.out.println("Player 1 score doubled!");
-        } else if (playerNumber == 2) {
-            player2Score *= 2;
-            player2ScoreLabel.setText("Score: " + player2Score);
-            System.out.println("Player 2 score doubled!");
-        }
     }
 }

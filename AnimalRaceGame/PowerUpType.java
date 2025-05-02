@@ -4,19 +4,13 @@ public enum PowerUpType implements MysteryEffect {
     SPEED_BOOST("a") {
         @Override
         public void apply(AnimalRaceGame game, int playerNumber) {
-            game.movePlayer(playerNumber, 30);  // example: move player forward
+            game.movePlayer(playerNumber, 30);  // Move player forward
         }
     },
     INVINCIBILITY("b") {
         @Override
         public void apply(AnimalRaceGame game, int playerNumber) {
-            game.setPlayerInvincible(playerNumber, true);  // example: make player invincible
-        }
-    },
-    DOUBLE_POINTS("c") {
-        @Override
-        public void apply(AnimalRaceGame game, int playerNumber) {
-            game.doublePlayerPoints(playerNumber); // example: double the player's points
+            game.setPlayerInvincible(playerNumber, true);  // Make player invincible
         }
     };
 
