@@ -17,7 +17,7 @@ public class StartMenu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Center the window
 
-        String[] animals = {"Ngua", "Rua", "Tho", "Chim", "Cho", "Meo"};
+        String[] animals = {"Tho", "Cho", "Meo"};
 
         player1Combo = new JComboBox<>(animals);
         player2Combo = new JComboBox<>(animals);
