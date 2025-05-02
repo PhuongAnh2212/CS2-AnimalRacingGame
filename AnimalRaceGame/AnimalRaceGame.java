@@ -9,6 +9,7 @@ import java.awt.event.*;
 
 public class AnimalRaceGame extends JFrame {
     private JLabel player1Label, player2Label, countdown;
+    private JLabel player1ScoreLabel, player2ScoreLabel;
     private boolean p1Frozen = false;
     private boolean p2Frozen = false;
     private ObstacleManager obstacleManager;
@@ -17,6 +18,8 @@ public class AnimalRaceGame extends JFrame {
     private Timer mysteryBoxTimer;
     private boolean p1Invincible = false;
     private boolean p2Invincible = false;
+    private int player1Score = 0;
+    private int player2Score = 0;
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
         setTitle("Animal Race Game");
@@ -34,6 +37,14 @@ public class AnimalRaceGame extends JFrame {
         player2Label.setFont(new Font("Arial", Font.PLAIN, 20));
         player2Label.setBounds(50, 150, 200, 50);
         add(player2Label);
+
+        player1ScoreLabel = new JLabel("Score: 0");
+        player1ScoreLabel.setBounds(260, 100, 100, 50);
+        add(player1ScoreLabel);
+
+        player2ScoreLabel = new JLabel("Score: 0");
+        player2ScoreLabel.setBounds(260, 150, 100, 50);
+        add(player2ScoreLabel);
 
         countdown = new JLabel("Ready?");
         countdown.setFont(new Font("Arial", Font.BOLD, 40));
@@ -65,7 +76,6 @@ public class AnimalRaceGame extends JFrame {
                         Timer spawnTimer = new Timer(3000, ev -> obstacleManager.spawnObstacle());
                         spawnTimer.start();
 
-                        // Bắt đầu timer di chuyển
                         checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
                         mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBox());
                         mysteryBoxTimer.start();
@@ -78,7 +88,7 @@ public class AnimalRaceGame extends JFrame {
 
         countdownTimer.start();
 
-        // Add this after spawnTimer and before keyListener
+        // Start mystery box spawn timer
         mysteryBoxTimer = new Timer(5000, ev -> spawnMysteryBox());
         mysteryBoxTimer.start();
 
@@ -87,15 +97,14 @@ public class AnimalRaceGame extends JFrame {
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
 
-                // Player 1: dùng phím A
                 if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
                     movePlayer(1, 10); // Move Player 1
                 }
 
-                // Player 2: dùng phím L
                 if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
                     movePlayer(2, 10); // Move Player 2
                 }
+
                 if (mysteryBox != null) {
                     if (player1Label.getBounds().intersects(mysteryBox.getBounds())) {
                         applyMysteryEffect(1);
@@ -107,6 +116,7 @@ public class AnimalRaceGame extends JFrame {
                 checkWinner.check();
             }
         });
+
         setFocusable(true);
         requestFocusInWindow();
     }
@@ -148,28 +158,39 @@ public class AnimalRaceGame extends JFrame {
         return (playerNum == 1) ? p1Frozen : p2Frozen;
     }
 
-    // Move player method (for power-ups like speed boost)
     public void movePlayer(int playerNumber, int distance) {
         if (playerNumber == 1) {
             player1Label.setLocation(player1Label.getX() + distance, player1Label.getY());
+            player1Score += distance;
+            player1ScoreLabel.setText("Score: " + player1Score);
         } else if (playerNumber == 2) {
             player2Label.setLocation(player2Label.getX() + distance, player2Label.getY());
+            player2Score += distance;
+            player2ScoreLabel.setText("Score: " + player2Score);
         }
     }
 
-    // Set player invincible method (for invincibility power-up)
     public void setPlayerInvincible(int playerNumber, boolean isInvincible) {
         if (playerNumber == 1) {
             p1Invincible = isInvincible;
-            // You can add additional logic to change the appearance of Player 1 (e.g., change the label color, etc.)
         } else if (playerNumber == 2) {
             p2Invincible = isInvincible;
-            // Similarly, you can modify Player 2's appearance or behavior
         }
     }
 
-    // Additional methods to check if players are invincible or frozen (if needed)
     public boolean isPlayerInvincible(int playerNumber) {
         return (playerNumber == 1) ? p1Invincible : p2Invincible;
+    }
+
+    public void doublePlayerPoints(int playerNumber) {
+        if (playerNumber == 1) {
+            player1Score *= 2;
+            player1ScoreLabel.setText("Score: " + player1Score);
+            System.out.println("Player 1 score doubled!");
+        } else if (playerNumber == 2) {
+            player2Score *= 2;
+            player2ScoreLabel.setText("Score: " + player2Score);
+            System.out.println("Player 2 score doubled!");
+        }
     }
 }
