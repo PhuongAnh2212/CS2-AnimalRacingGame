@@ -27,15 +27,15 @@ public class AnimalRaceGame extends JFrame {
         setLayout(null);
         getContentPane().setBackground(Color.PINK);
 
-        // player1Label = new JLabel("dog " + p1Animal);
-        // player1Label.setFont(new Font("Arial", Font.PLAIN, 20));
-        // player1Label.setBounds(50, 100, 100, 50);
-        // add(player1Label);
+        player1Label = new JLabel("player1 " + p1Animal);
+        player1Label.setFont(new Font("Arial", Font.PLAIN, 20));
+        player1Label.setBounds(50, 100, 100, 50);
+        add(player1Label);
 
-        // player2Label = new JLabel("cat " + p2Animal);
-        // player2Label.setFont(new Font("Arial", Font.PLAIN, 20));
-        // player2Label.setBounds(50, 200, 100, 50);
-        // add(player2Label);
+        player2Label = new JLabel("player2 " + p2Animal);
+        player2Label.setFont(new Font("Arial", Font.PLAIN, 20));
+        player2Label.setBounds(50, 200, 100, 50);
+        add(player2Label);
 
         countdown = new JLabel("Ready?");
         countdown.setFont(new Font("Arial", Font.BOLD, 40));
