@@ -16,8 +16,9 @@ public class AnimalRaceGame extends JFrame {
     private Timer mysteryBoxTimer;
     private boolean p1Invincible = false;
     private boolean p2Invincible = false;
-
     private MysteryBox box1, box2;
+
+    private boolean gameStarted = false; // 🔧 Game start control
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
         setTitle("Animal Race Game");
@@ -26,15 +27,15 @@ public class AnimalRaceGame extends JFrame {
         setLayout(null);
         getContentPane().setBackground(Color.PINK);
 
-        player1Label = new JLabel("dog " + p1Animal);
-        player1Label.setFont(new Font("Arial", Font.PLAIN, 20));
-        player1Label.setBounds(50, 100, 100, 50);
-        add(player1Label);
+        // player1Label = new JLabel("dog " + p1Animal);
+        // player1Label.setFont(new Font("Arial", Font.PLAIN, 20));
+        // player1Label.setBounds(50, 100, 100, 50);
+        // add(player1Label);
 
-        player2Label = new JLabel("cat " + p2Animal);
-        player2Label.setFont(new Font("Arial", Font.PLAIN, 20));
-        player2Label.setBounds(50, 200, 100, 50);
-        add(player2Label);
+        // player2Label = new JLabel("cat " + p2Animal);
+        // player2Label.setFont(new Font("Arial", Font.PLAIN, 20));
+        // player2Label.setBounds(50, 200, 100, 50);
+        // add(player2Label);
 
         countdown = new JLabel("Ready?");
         countdown.setFont(new Font("Arial", Font.BOLD, 40));
@@ -58,13 +59,15 @@ public class AnimalRaceGame extends JFrame {
                         remove(countdown);
                         repaint();
 
+                        // 🔧 Start game now
+                        gameStarted = true;
+
                         // Start game logic
                         obstacleManager = new ObstacleManager(AnimalRaceGame.this);
                         obstacleManager.startObstacleTimer(player1Label, player2Label);
 
                         checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
 
-                        // Spawn mystery boxes regularly
                         mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBoxes());
                         mysteryBoxTimer.start();
                     });
@@ -78,6 +81,8 @@ public class AnimalRaceGame extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                if (!gameStarted) return; // 🔒 Block input before game starts
+
                 int key = e.getKeyCode();
 
                 if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
@@ -110,14 +115,12 @@ public class AnimalRaceGame extends JFrame {
         if (box1 != null) remove(box1);
         if (box2 != null) remove(box2);
 
-        // Spawn for Player 1
         int p1X = player1Label.getX();
         int p1Y = player1Label.getY();
         box1 = new MysteryBox();
         box1.setLocation(Math.min(p1X + 150, 700), p1Y + 10);
         add(box1);
 
-        // Spawn for Player 2
         int p2X = player2Label.getX();
         int p2Y = player2Label.getY();
         box2 = new MysteryBox();
