@@ -27,6 +27,6 @@ public class CheckWinner {
 
     private void resetGame() {
         frame.dispose();
-        new StartMenu();
+        new ChooseAnimal();
     }
 }
