@@ -17,6 +17,11 @@ public class AnimalRaceGame extends JFrame {
     private boolean p1Invincible = false;
     private boolean p2Invincible = false;
     private MysteryBox box1, box2;
+    private boolean p1Jumping = false;
+    private boolean p2Jumping = false;
+    private int jumpHeight = 50;
+    private int jumpStep = 0;
+
 
     private boolean gameStarted = false; // 🔧 Game start control
 
@@ -81,34 +86,79 @@ public class AnimalRaceGame extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (!gameStarted) return; // 🔒 Block input before game starts
-
-                int key = e.getKeyCode();
-
+                int key = e.getKeyCode(); // Correctly define and assign the key variable here
+        
+                // Check if 'W' is pressed and player 1 is not jumping
+                if (key == KeyEvent.VK_W && !p1Jumping) {
+                    p1Jumping = true;
+                    jumpStep = 0;
+                }
+                
+                // Check if 'O' is pressed and player 2 is not jumping
+                if (key == KeyEvent.VK_O && !p2Jumping) {
+                    p2Jumping = true;
+                    jumpStep = 0;
+                }
+                
+                if (!gameStarted) return; // Block input before game starts
+        
+                // Check if 'A' is pressed and player 1 is not frozen
                 if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
                     movePlayer(1, 10);
                 }
-
+        
+                // Check if 'L' is pressed and player 2 is not frozen
                 if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
                     movePlayer(2, 10);
                 }
-
+        
+                // Handle interaction with mystery boxes
                 if (box1 != null && player1Label.getBounds().intersects(box1.getBounds())) {
                     applyMysteryEffect(1, box1);
                     box1 = null;
                 }
-
+        
                 if (box2 != null && player2Label.getBounds().intersects(box2.getBounds())) {
                     applyMysteryEffect(2, box2);
                     box2 = null;
                 }
-
+        
+                // Check if a winner is determined
                 checkWinner.check();
             }
         });
+        
 
         setFocusable(true);
         requestFocusInWindow();
+
+        Timer jumpTimer = new Timer(50, e -> {
+            if (p1Jumping) {
+                if (jumpStep < 5) {
+                    player1Label.setLocation(player1Label.getX(), player1Label.getY() - jumpHeight / 5);
+                } else if (jumpStep < 10) {
+                    player1Label.setLocation(player1Label.getX(), player1Label.getY() + jumpHeight / 5);
+                } else {
+                    p1Jumping = false;
+                }
+                jumpStep++;
+            }
+        
+            if (p2Jumping) {
+                if (jumpStep < 5) {
+                    player2Label.setLocation(player2Label.getX(), player2Label.getY() - jumpHeight / 5);
+                } else if (jumpStep < 10) {
+                    player2Label.setLocation(player2Label.getX(), player2Label.getY() + jumpHeight / 5);
+                } else {
+                    p2Jumping = false;
+                }
+                jumpStep++;
+            }
+        
+            repaint();
+        });
+        jumpTimer.start();
+        
     }
 
     private void spawnMysteryBoxes() {
