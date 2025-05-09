@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 import java.awt.event.*;
 
 public class AnimalRaceGame extends JFrame {
@@ -14,6 +15,7 @@ public class AnimalRaceGame extends JFrame {
     private ObstacleManager obstacleManager;
     private CheckWinner checkWinner;
     private Timer mysteryBoxTimer;
+    private Timer mysteryBoxMoveTimer; // New timer for moving mystery boxes
     private boolean p1Invincible = false;
     private boolean p2Invincible = false;
     private MysteryBox box1, box2;
@@ -21,9 +23,7 @@ public class AnimalRaceGame extends JFrame {
     private boolean p2Jumping = false;
     private int jumpHeight = 50;
     private int jumpStep = 0;
-
-
-    private boolean gameStarted = false; // 🔧 Game start control
+    private boolean gameStarted = false;
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
         setTitle("Animal Race Game");
@@ -64,10 +64,8 @@ public class AnimalRaceGame extends JFrame {
                         remove(countdown);
                         repaint();
 
-                        // 🔧 Start game now
                         gameStarted = true;
 
-                        // Start game logic
                         obstacleManager = new ObstacleManager(AnimalRaceGame.this);
                         obstacleManager.startObstacleTimer(player1Label, player2Label);
 
@@ -75,6 +73,10 @@ public class AnimalRaceGame extends JFrame {
 
                         mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBoxes());
                         mysteryBoxTimer.start();
+
+                        // Start the movement timer for mystery boxes
+                        mysteryBoxMoveTimer = new Timer(30, ev3 -> moveMysteryBoxes());
+                        mysteryBoxMoveTimer.start();
                     });
                     removeLabelTimer.setRepeats(false);
                     removeLabelTimer.start();
@@ -86,51 +88,45 @@ public class AnimalRaceGame extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                int key = e.getKeyCode(); // Correctly define and assign the key variable here
-        
-                // Check if 'W' is pressed and player 1 is not jumping
+                int key = e.getKeyCode();
+
                 if (key == KeyEvent.VK_W && !p1Jumping) {
                     p1Jumping = true;
                     jumpStep = 0;
                 }
-                
-                // Check if 'O' is pressed and player 2 is not jumping
+
                 if (key == KeyEvent.VK_O && !p2Jumping) {
                     p2Jumping = true;
                     jumpStep = 0;
                 }
-                
-                if (!gameStarted) return; // Block input before game starts
-        
-                // Check if 'A' is pressed and player 1 is not frozen
+
+                if (!gameStarted) return;
+
                 if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
                     movePlayer(1, 10);
                 }
-        
-                // Check if 'L' is pressed and player 2 is not frozen
+
                 if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
                     movePlayer(2, 10);
                 }
-        
-                // Handle interaction with mystery boxes
+
                 if (box1 != null && player1Label.getBounds().intersects(box1.getBounds())) {
                     applyMysteryEffect(1, box1);
+                    remove(box1);
                     box1 = null;
+                    repaint();
                 }
-        
+
                 if (box2 != null && player2Label.getBounds().intersects(box2.getBounds())) {
                     applyMysteryEffect(2, box2);
+                    remove(box2);
                     box2 = null;
+                    repaint();
                 }
-        
-                // Check if a winner is determined
+
                 checkWinner.check();
             }
         });
-        
-
-        setFocusable(true);
-        requestFocusInWindow();
 
         Timer jumpTimer = new Timer(50, e -> {
             if (p1Jumping) {
@@ -143,7 +139,7 @@ public class AnimalRaceGame extends JFrame {
                 }
                 jumpStep++;
             }
-        
+
             if (p2Jumping) {
                 if (jumpStep < 5) {
                     player2Label.setLocation(player2Label.getX(), player2Label.getY() - jumpHeight / 5);
@@ -154,38 +150,82 @@ public class AnimalRaceGame extends JFrame {
                 }
                 jumpStep++;
             }
-        
+
             repaint();
         });
         jumpTimer.start();
-        
+
+        setFocusable(true);
+        requestFocusInWindow();
     }
 
     private void spawnMysteryBoxes() {
-        if (box1 != null) remove(box1);
-        if (box2 != null) remove(box2);
+        // Remove existing boxes if they weren't collected
+        if (box1 != null) {
+            remove(box1);
+            box1 = null;
+        }
+        if (box2 != null) {
+            remove(box2);
+            box2 = null;
+        }
 
-        int p1X = player1Label.getX();
-        int p1Y = player1Label.getY();
-        box1 = new MysteryBox();
-        box1.setLocation(Math.min(p1X + 150, 700), p1Y + 10);
-        add(box1);
+        // Randomly decide how many boxes to spawn (0, 1, or 2)
+        Random rand = new Random();
+        int numBoxes = rand.nextInt(3); // 0, 1, or 2 boxes
 
-        int p2X = player2Label.getX();
-        int p2Y = player2Label.getY();
-        box2 = new MysteryBox();
-        box2.setLocation(Math.min(p2X + 150, 700), p2Y + 10);
-        add(box2);
+        int[] lanes = {100, 200}; // Lanes for player 1 and player 2
+        boolean[] usedLanes = {false, false}; // Track which lanes are used
+
+        for (int i = 0; i < numBoxes; i++) {
+            // Pick a random lane that hasn't been used yet
+            int laneIndex;
+            do {
+                laneIndex = rand.nextInt(lanes.length);
+            } while (usedLanes[laneIndex]);
+            usedLanes[laneIndex] = true;
+
+            int y = lanes[laneIndex];
+            MysteryBox box = new MysteryBox();
+            box.setBounds(800, y, 30, 30); // Spawn at right edge
+            add(box);
+
+            if (laneIndex == 0) {
+                box1 = box; // Assign to lane 1 (y=100)
+            } else {
+                box2 = box; // Assign to lane 2 (y=200)
+            }
+        }
 
         repaint();
+    }
+
+    private void moveMysteryBoxes() {
+        // Move box1 if it exists
+        if (box1 != null) {
+            box1.setLocation(box1.getX() - 5, box1.getY());
+            if (box1.getX() < -50) { // Remove if off-screen
+                remove(box1);
+                box1 = null;
+                repaint();
+            }
+        }
+
+        // Move box2 if it exists
+        if (box2 != null) {
+            box2.setLocation(box2.getX() - 5, box2.getY());
+            if (box2.getX() < -50) { // Remove if off-screen
+                remove(box2);
+                box2 = null;
+                repaint();
+            }
+        }
     }
 
     private void applyMysteryEffect(int playerNumber, MysteryBox box) {
         if (box == null) return;
         MysteryEffect effect = box.getEffect();
         effect.apply(this, playerNumber);
-        remove(box);
-        repaint();
     }
 
     public void freezePlayer(int playerNum) {
@@ -219,5 +259,9 @@ public class AnimalRaceGame extends JFrame {
 
     public boolean isPlayerInvincible(int playerNumber) {
         return (playerNumber == 1) ? p1Invincible : p2Invincible;
+    }
+
+    public boolean isPlayerJumping(int playerNumber) {
+        return (playerNumber == 1) ? p1Jumping : p2Jumping;
     }
 }
