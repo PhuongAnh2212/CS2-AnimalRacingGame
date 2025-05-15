@@ -6,7 +6,7 @@ import java.awt.*;
 public class CheckWinner {
     private JLabel p1, p2;
     private JFrame frame;
-    private final int finish_line = 1000;
+    private final int finish_line = -20000;
     private boolean gameover = false;
     private long startTime;
 
@@ -24,7 +24,7 @@ public class CheckWinner {
 
         System.out.println("Player 1 X: " + p1.getX() + " Player 2 X: " + p2.getX());
 
-        if (p1.getX() >= finish_line) {
+        if (p1.getX() <= finish_line) {
             gameover = true;
             JOptionPane.showMessageDialog(frame, "Player 1 Wins!");
             long finishTime = System.currentTimeMillis() - startTime;
@@ -33,7 +33,7 @@ public class CheckWinner {
             JOptionPane.showMessageDialog(frame, "You finished in " + finishTime + " ms!");
             Leaderboard.showLeaderboard(frame);
             resetGame();
-        } else if (p2.getX() >= finish_line) {
+        } else if (p2.getX() <= finish_line) {
             gameover = true;
             JOptionPane.showMessageDialog(frame, "Player 2 Wins!");
             long finishTime = System.currentTimeMillis() - startTime;

@@ -42,6 +42,9 @@ public class AnimalRaceGame extends JFrame {
         private int backgroundX = 0; // Current background offset
         private Font retroByteFont;
 
+        private boolean aPressed = false;
+        private boolean lPressed = false;
+
         private void updateCamera(int playerX) {
             // Use the lead player X position to calculate the center.
             int centerX = getLeadPlayerX() - viewWidth / 2;
@@ -57,6 +60,7 @@ public class AnimalRaceGame extends JFrame {
 
         public GamePanel(String p1Animal, String p2Animal) {
             setLayout(null);
+            setFocusable(true);
             backgroundImage = new ImageIcon("ingame/background.jpg").getImage();
 
             try {
@@ -72,13 +76,11 @@ public class AnimalRaceGame extends JFrame {
             ImageIcon player1Icon = new ImageIcon("ingame/" + p1Animal.toLowerCase() + ".png");
             player1Label = new JLabel(player1Icon);
             player1Label.setBounds(50, 100, player1Icon.getIconWidth(), player1Icon.getIconHeight());
-            add(player1Label);
 
             // Set up player 2
             ImageIcon player2Icon = new ImageIcon("ingame/" + p2Animal.toLowerCase() + ".png");
             player2Label = new JLabel(player2Icon);
             player2Label.setBounds(50, 300, player2Icon.getIconWidth(), player2Icon.getIconHeight());
-            add(player2Label);
 
             // Set up countdown label
             countdown = new JLabel("Ready?");
@@ -125,11 +127,13 @@ public class AnimalRaceGame extends JFrame {
 
                     int key = e.getKeyCode();
 
-                    if (key == KeyEvent.VK_A && !isPlayerFrozen(1)) {
+                    if (key == KeyEvent.VK_A && !aPressed && !isPlayerFrozen(1)) {
+                        aPressed = true;
                         movePlayer(1, 10);
                     }
 
-                    if (key == KeyEvent.VK_L && !isPlayerFrozen(2)) {
+                    if (key == KeyEvent.VK_L && !lPressed && !isPlayerFrozen(2)) {
+                        lPressed = true;
                         movePlayer(2, 10);
                     }
 
@@ -145,9 +149,19 @@ public class AnimalRaceGame extends JFrame {
 
                     checkWinner.check();
                 }
+                public void keyReleased(KeyEvent e) {
+                    int key = e.getKeyCode();
+
+                    if (key == KeyEvent.VK_A) {
+                        aPressed = false;
+                    }
+
+                    if (key == KeyEvent.VK_L) {
+                        lPressed = false;
+                    }
+                }
             });
 
-            setFocusable(true);
             requestFocusInWindow();
         }
         private int player1X = 50;
