@@ -71,8 +71,7 @@ public class ChooseAnimal extends JFrame {
         player2Combo.addActionListener(e -> updateAnimalImage(player2Combo, player2Image));
 
         startButton = new JButton("Start Game");
-        startButton.setBounds(500, 550, 200, 50);
-        startButton.setFont(new Font("Arial", Font.BOLD, 18));
+        startButton.setBounds(585, 550, 200, 50);
         startButton.setBackground(Color.WHITE);
         startButton.setForeground(new Color(0xa9a6ff));
         startButton.setFocusPainted(false);
@@ -118,7 +117,9 @@ public class ChooseAnimal extends JFrame {
     }
 
     public static void main(String[] args) {
-        GlobalUI.applyGlobalFont("RetroByte.ttf", 24f);
-        new ChooseAnimal();
+        SwingUtilities.invokeLater(() -> {
+            GlobalUI.applyGlobalFont("RetroByte.ttf", 35f);
+            new StartScreen();
+        });
     }
 }
