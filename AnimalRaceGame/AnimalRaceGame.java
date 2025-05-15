@@ -110,7 +110,7 @@ public class AnimalRaceGame extends JFrame {
 
                             checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
 
-                            mysteryBoxTimer = new Timer(5000, ev2 -> spawnMysteryBoxes());
+                            mysteryBoxTimer = new Timer(3000, ev2 -> spawnMysteryBoxes());
                             mysteryBoxTimer.start();
                         });
                         removeLabelTimer.setRepeats(false);
@@ -164,8 +164,8 @@ public class AnimalRaceGame extends JFrame {
 
             requestFocusInWindow();
         }
-        private int player1X = 50;
-        private int player2X = 50;
+        private int player1X = -100;
+        private int player2X = -100;
 
         private int getLeadPlayerX() {
             // Return the X position of the player who is ahead.
@@ -200,16 +200,14 @@ public class AnimalRaceGame extends JFrame {
         if (box1 != null) remove(box1);
         if (box2 != null) remove(box2);
 
-        int p1X = player1Label.getX();
         int p1Y = player1Label.getY();
-        box1 = new MysteryBox();
-        box1.setLocation(Math.min(p1X + 150, raceLength - box1.getWidth()), p1Y + 10);
+        box1 = new MysteryBox(player1Label, player2Label);
+        box1.setLocation(Math.min(gamePanel.player1X + 500, raceLength - box1.getWidth()), p1Y + 200);
         add(box1);
 
-        int p2X = player2Label.getX();
         int p2Y = player2Label.getY();
-        box2 = new MysteryBox();
-        box2.setLocation(Math.min(p2X + 150, raceLength - box2.getWidth()), p2Y + 10);
+        box2 = new MysteryBox(player1Label, player2Label);
+        box2.setLocation(Math.min(gamePanel.player2X + 500, raceLength - box2.getWidth()), p2Y + 200);
         add(box2);
 
         repaint();
