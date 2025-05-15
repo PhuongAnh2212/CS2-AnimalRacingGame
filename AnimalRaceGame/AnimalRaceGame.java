@@ -11,14 +11,7 @@ import java.io.IOException;
 
 public class AnimalRaceGame extends JFrame {
     private JLabel player1Label, player2Label, countdown;
-    private boolean p1Frozen = false;
-    private boolean p2Frozen = false;
-    private ObstacleManager obstacleManager;
     private CheckWinner checkWinner;
-    private Timer mysteryBoxTimer;
-    private boolean p1Invincible = false;
-    private boolean p2Invincible = false;
-    private MysteryBox box1, box2;
     private boolean gameStarted = false;
     private int raceLength = 3840;
     private GamePanel gamePanel;
@@ -105,13 +98,8 @@ public class AnimalRaceGame extends JFrame {
 
                             gameStarted = true;
 
-                            obstacleManager = new ObstacleManager(AnimalRaceGame.this);
-                            obstacleManager.startObstacleTimer(player1Label, player2Label);
-
                             checkWinner = new CheckWinner(player1Label, player2Label, AnimalRaceGame.this);
 
-                            mysteryBoxTimer = new Timer(3000, ev2 -> spawnMysteryBoxes());
-                            mysteryBoxTimer.start();
                         });
                         removeLabelTimer.setRepeats(false);
                         removeLabelTimer.start();
@@ -127,24 +115,14 @@ public class AnimalRaceGame extends JFrame {
 
                     int key = e.getKeyCode();
 
-                    if (key == KeyEvent.VK_A && !aPressed && !isPlayerFrozen(1)) {
+                    if (key == KeyEvent.VK_A && !aPressed) {
                         aPressed = true;
                         movePlayer(1, 10);
                     }
 
-                    if (key == KeyEvent.VK_L && !lPressed && !isPlayerFrozen(2)) {
+                    if (key == KeyEvent.VK_L && !lPressed) {
                         lPressed = true;
                         movePlayer(2, 10);
-                    }
-
-                    if (box1 != null && player1Label.getBounds().intersects(box1.getBounds())) {
-                        applyMysteryEffect(1, box1);
-                        box1 = null;
-                    }
-
-                    if (box2 != null && player2Label.getBounds().intersects(box2.getBounds())) {
-                        applyMysteryEffect(2, box2);
-                        box2 = null;
                     }
 
                     checkWinner.check();
@@ -196,58 +174,7 @@ public class AnimalRaceGame extends JFrame {
 
     }
 
-    private void spawnMysteryBoxes() {
-        if (box1 != null) remove(box1);
-        if (box2 != null) remove(box2);
-
-        int p1Y = player1Label.getY();
-        box1 = new MysteryBox(player1Label, player2Label);
-        box1.setLocation(Math.min(gamePanel.player1X + 500, raceLength - box1.getWidth()), p1Y + 200);
-        add(box1);
-
-        int p2Y = player2Label.getY();
-        box2 = new MysteryBox(player1Label, player2Label);
-        box2.setLocation(Math.min(gamePanel.player2X + 500, raceLength - box2.getWidth()), p2Y + 200);
-        add(box2);
-
-        repaint();
-    }
-
-    private void applyMysteryEffect(int playerNumber, MysteryBox box) {
-        if (box == null) return;
-        MysteryEffect effect = box.getEffect();
-        effect.apply(this, playerNumber);
-        remove(box);
-        repaint();
-    }
-
-    public void freezePlayer(int playerNum) {
-        if (playerNum == 1) p1Frozen = true;
-        else if (playerNum == 2) p2Frozen = true;
-
-        Timer t = new Timer(2000, e -> {
-            if (playerNum == 1) p1Frozen = false;
-            else if (playerNum == 2) p2Frozen = false;
-        });
-        t.setRepeats(false);
-        t.start();
-    }
-
-    public boolean isPlayerFrozen(int playerNum) {
-        return (playerNum == 1) ? p1Frozen : p2Frozen;
-    }
-
-
     public void movePlayer(int playerNumber, int distance) {
         gamePanel.movePlayer(playerNumber, distance);
-    }
-
-    public void setPlayerInvincible(int playerNumber, boolean isInvincible) {
-        if (playerNumber == 1) p1Invincible = isInvincible;
-        else if (playerNumber == 2) p2Invincible = isInvincible;
-    }
-
-    public boolean isPlayerInvincible(int playerNumber) {
-        return (playerNumber == 1) ? p1Invincible : p2Invincible;
     }
 }
