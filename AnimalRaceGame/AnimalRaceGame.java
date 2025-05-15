@@ -80,7 +80,7 @@ public class AnimalRaceGame extends JFrame {
             // Set up player 2
             ImageIcon player2Icon = new ImageIcon("ingame/" + p2Animal.toLowerCase() + ".png");
             player2Label = new JLabel(player2Icon);
-            player2Label.setBounds(50, 300, player2Icon.getIconWidth(), player2Icon.getIconHeight());
+            player2Label.setBounds(50, 350, player2Icon.getIconWidth(), player2Icon.getIconHeight());
 
             // Set up countdown label
             countdown = new JLabel("Ready?");
