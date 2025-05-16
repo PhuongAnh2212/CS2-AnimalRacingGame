@@ -6,7 +6,6 @@ import java.util.Collections;
 
 public class Leaderboard {
     private static ArrayList<LeaderboardEntry> entries = new ArrayList<>();
-
     public static void recordResult(String name, long time) {
         entries.add(new LeaderboardEntry(name, time));
         // Sort the leaderboard by time in ascending order (fastest first)

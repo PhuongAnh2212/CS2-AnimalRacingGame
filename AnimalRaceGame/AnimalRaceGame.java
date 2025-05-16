@@ -6,6 +6,10 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class AnimalRaceGame extends JFrame {
     private JLabel player1Label, player2Label, countdown;
@@ -19,12 +23,13 @@ public class AnimalRaceGame extends JFrame {
 
     private int[][] obstaclePositions = {
             {800, 256},  // Obstacle 1 for Player 1
-            {1400, 256}, // Obstacle 2 for Player 1
-            {2000, 256}, // Obstacle 3 for Player 1
-            {800, 505},  // Obstacle 1 for Player 2
-            {1400, 505}, // Obstacle 2 for Player 2
-            {2000, 505}  // Obstacle 3 for Player 2
+            {1200, 505},  // Obstacle 1 for Player 2
     };
+
+    private boolean p1Immune = false;
+    private boolean p2Immune = false;
+    private Set<Integer> spawnedPositionsP1 = new HashSet<>();
+    private Set<Integer> spawnedPositionsP2 = new HashSet<>();
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
         setTitle("Animal Race Game");
@@ -39,7 +44,7 @@ public class AnimalRaceGame extends JFrame {
 
     class GamePanel extends JPanel {
         private Image backgroundImage;
-        private int raceLength = 2340; // Total race length
+        private int raceLength = 2040; // Total race length
         private int viewWidth = 1920; // Window width
         private int backgroundX = 0; // Background offset
         private Font retroByteFont;
@@ -152,12 +157,15 @@ public class AnimalRaceGame extends JFrame {
         private void checkSpawnObstacle(int playerNumber, int playerX) {
             ArrayList<Obstacle> obstacles = (playerNumber == 1) ? obstacles1 : obstacles2;
             int yPos = (playerNumber == 1) ? 256 : 505;
-            int[] positions = (playerNumber == 1) ? new int[]{800, 1400, 2000} : new int[]{800, 1400, 2000};
+            int[] positions = new int[]{800};
+
+            Set<Integer> spawnedPositions = (playerNumber == 1) ? spawnedPositionsP1 : spawnedPositionsP2;
 
             for (int xPos : positions) {
-                if (playerX >= xPos - 500 && playerX <= xPos && !obstacleExists(obstacles, xPos)) {
+                if (playerX >= xPos - 500 && playerX <= xPos && !spawnedPositions.contains(xPos)) {
                     try {
                         obstacles.add(new Obstacle(xPos, yPos));
+                        spawnedPositions.add(xPos); // Mark as spawned
                         System.out.println("Spawned obstacle for Player " + playerNumber + " at (" + xPos + ", " + yPos + ")");
                     } catch (Exception e) {
                         System.err.println("Failed to spawn obstacle: " + e.getMessage());
@@ -165,6 +173,7 @@ public class AnimalRaceGame extends JFrame {
                 }
             }
         }
+
 
         private boolean obstacleExists(ArrayList<Obstacle> obstacles, int xPos) {
             for (Obstacle obs : obstacles) {
@@ -178,30 +187,62 @@ public class AnimalRaceGame extends JFrame {
             JLabel player = (playerNumber == 1) ? player1Label : player2Label;
             int playerX = (playerNumber == 1) ? player1X : player2X;
             boolean frozen = (playerNumber == 1) ? p1Frozen : p2Frozen;
+            boolean immune = (playerNumber == 1) ? p1Immune : p2Immune;
 
-            if (frozen) return;
+            if (frozen || immune) return; // Don't check if player is frozen or immune
 
             Rectangle playerBounds = new Rectangle(playerX + 156, player.getY() + 156, 200, 200);
 
-            for (Obstacle obs : obstacles) {
+            Iterator<Obstacle> iterator = obstacles.iterator();
+            while (iterator.hasNext()) {
+                Obstacle obs = iterator.next();
                 Rectangle obsBounds = obs.getBounds();
                 if (playerBounds.intersects(obsBounds)) {
                     System.out.println("Collision detected for Player " + playerNumber + " with obstacle at " + obsBounds);
-                    if (playerNumber == 1) p1Frozen = true;
-                    else p2Frozen = true;
 
+                    // Freeze the player and make them immune
+                    if (playerNumber == 1) {
+                        p1Frozen = true;
+                        p1Immune = true;
+                    } else {
+                        p2Frozen = true;
+                        p2Immune = true;
+                    }
+
+                    // Start freeze timer
                     Timer freezeTimer = new Timer(2000, e -> {
-                        if (playerNumber == 1) p1Frozen = false;
-                        else p2Frozen = false;
-                        System.out.println("Player " + playerNumber + " unfrozen");
+                        if (playerNumber == 1) {
+                            p1Frozen = false;
+                            System.out.println("Player 1 unfrozen");
+                            // Start immunity timer
+                            Timer immuneTimer = new Timer(1000, ev -> {
+                                p1Immune = false;
+                                System.out.println("Player 1 is no longer immune");
+                            });
+                            immuneTimer.setRepeats(false);
+                            immuneTimer.start();
+                        } else {
+                            p2Frozen = false;
+                            System.out.println("Player 2 unfrozen");
+                            Timer immuneTimer = new Timer(1000, ev -> {
+                                p2Immune = false;
+                                System.out.println("Player 2 is no longer immune");
+                            });
+                            immuneTimer.setRepeats(false);
+                            immuneTimer.start();
+                        }
                     });
                     freezeTimer.setRepeats(false);
                     freezeTimer.start();
-                    obstacles.remove(obs);
+
+                    iterator.remove(); // Remove the obstacle after collision
                     break;
                 }
             }
         }
+
+
+
 
         @Override
         protected void paintComponent(Graphics g) {

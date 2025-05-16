@@ -6,7 +6,7 @@ import java.awt.*;
 public class CheckWinner {
     private int p1, p2;
     private JFrame frame;
-    private final int finish_line = 2000;
+    private final int finish_line = 1100;
     private boolean gameover = false;
     private long startTime;
 

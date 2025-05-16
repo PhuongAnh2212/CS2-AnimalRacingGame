@@ -53,7 +53,7 @@ public class ChooseAnimal extends JFrame {
         backgroundPanel.add(player1Label);
         player1Combo = new JComboBox<>(animals);
         player1Combo.setBounds(250, 490, 200, 30);
-
+        backgroundPanel.add(player1Combo);
 
         //Styling Player 2
         player2Image = new JLabel();
@@ -65,12 +65,14 @@ public class ChooseAnimal extends JFrame {
         backgroundPanel.add(player2Label);
         player2Combo = new JComboBox<>(animals);
         player2Combo.setBounds(950, 490, 200, 30);
+        backgroundPanel.add(player2Combo);
 
         player1Combo.addActionListener(e -> updateAnimalImage(player1Combo, player1Image));
         player2Combo.addActionListener(e -> updateAnimalImage(player2Combo, player2Image));
 
         startButton = new JButton("Start Game");
         startButton.setBounds(585, 550, 200, 50);
+        startButton.setFont(new Font("Arial", Font.BOLD, 18));
         startButton.setBackground(Color.WHITE);
         startButton.setForeground(new Color(0xa9a6ff));
         startButton.setFocusPainted(false);
@@ -116,9 +118,7 @@ public class ChooseAnimal extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            GlobalUI.applyGlobalFont("RetroByte.ttf", 35f);
-            new StartScreen();
-        });
+        GlobalUI.applyGlobalFont("RetroByte.ttf", 24f);
+        new ChooseAnimal();
     }
 }
