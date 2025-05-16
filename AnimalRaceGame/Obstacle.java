@@ -12,7 +12,7 @@ public class Obstacle {
 
     public Obstacle(int x, int y) {
         this.x = x;
-        this.y = this.y;
+        this.y = y;
         try {
             ImageIcon icon = new ImageIcon("ingame/obstacle.png");
             image = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
