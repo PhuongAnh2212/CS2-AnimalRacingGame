@@ -6,8 +6,8 @@ import java.awt.*;
 public class Obstacle {
     private int x;
     private int y;
-    private int width = 200;
-    private int height = 200;
+    private int width = 150;
+    private int height = 150;
     private Image image;
 
     public Obstacle(int x, int y) {

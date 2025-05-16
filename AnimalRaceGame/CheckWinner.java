@@ -29,6 +29,7 @@ public class CheckWinner {
             JOptionPane.showMessageDialog(frame, "Player 1 Wins!");
             long finishTime = System.currentTimeMillis() - startTime;
             String name = JOptionPane.showInputDialog(frame, "Enter your name:");
+//            Leaderboard.dummyData();
             Leaderboard.recordResult(name, finishTime);
             JOptionPane.showMessageDialog(frame, "You finished in " + finishTime + " ms!");
             Leaderboard.showLeaderboard(frame);
@@ -38,6 +39,7 @@ public class CheckWinner {
             JOptionPane.showMessageDialog(frame, "Player 2 Wins!");
             long finishTime = System.currentTimeMillis() - startTime;
             String name = JOptionPane.showInputDialog(frame, "Enter your name:");
+//            Leaderboard.dummyData();
             Leaderboard.recordResult(name, finishTime);
             JOptionPane.showMessageDialog(frame, "You finished in " + finishTime + " ms!");
             Leaderboard.showLeaderboard(frame);

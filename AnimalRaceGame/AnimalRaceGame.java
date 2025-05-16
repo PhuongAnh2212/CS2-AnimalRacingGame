@@ -111,12 +111,12 @@ public class AnimalRaceGame extends JFrame {
 
                     if (key == KeyEvent.VK_A && !aPressed && !isPlayerFrozen(1)) {
                         aPressed = true;
-                        movePlayer(1, 10);
+                        movePlayer(1, 50);
                         checkCollisions(1);
                     }
                     if (key == KeyEvent.VK_L && !lPressed && !isPlayerFrozen(2)) {
                         lPressed = true;
-                        movePlayer(2, 10);
+                        movePlayer(2, 50);
                         checkCollisions(2);
                     }
                 }
@@ -174,7 +174,29 @@ public class AnimalRaceGame extends JFrame {
             }
         }
 
-
+//                       _oo0oo_
+//                      o8888888o
+//                      88" . "88
+//                      (| -_- |)
+//                      0\  =  /0
+//                    ___/`---'\___
+//                  .' \\|     |// '.
+//                 / \\|||  :  |||// \
+//                / _||||| -:- |||||- \
+//               |   | \\\  -  /// |   |
+//               | \_|  ''\---/''  |_/ |
+//               \  .-\__  '-'  ___/-. /
+//             ___'. .'  /--.--\  `. .'___
+//          ."" '<  `.___\_<|>_/___.' >' "".
+//         | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+//         \  \ `_.   \_ __\ /__ _/   .-` /  /
+//     =====`-.____`.___ \_____/___.-`___.-'=====
+//                       `=---='
+//
+//
+//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+//               佛祖保佑         永无BUG
         private boolean obstacleExists(ArrayList<Obstacle> obstacles, int xPos) {
             for (Obstacle obs : obstacles) {
                 if (obs.getBounds().x == xPos) return true;

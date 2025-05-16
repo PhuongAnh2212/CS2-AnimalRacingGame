@@ -5,7 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Leaderboard {
-    private static ArrayList<LeaderboardEntry> entries = new ArrayList<>();
+    public static ArrayList<LeaderboardEntry> entries = new ArrayList<>();
+    public static void dummyData(){
+         entries.add(new LeaderboardEntry("phanh", 4019L));
+         entries.add(new LeaderboardEntry("tlt", 2503L));
+         entries.add(new LeaderboardEntry("an", 2034L));
+         entries.add(new LeaderboardEntry("ngoc", 3306L));
+
+    }
     public static void recordResult(String name, long time) {
         entries.add(new LeaderboardEntry(name, time));
         // Sort the leaderboard by time in ascending order (fastest first)
