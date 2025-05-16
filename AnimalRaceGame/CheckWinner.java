@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CheckWinner {
-    private JLabel p1, p2;
+    private int p1, p2;
     private JFrame frame;
-    private final int finish_line = -20000;
+    private final int finish_line = 2000;
     private boolean gameover = false;
     private long startTime;
 
-    public CheckWinner(JLabel p1, JLabel p2, JFrame frame) {
+    public CheckWinner(int p1, int p2, JFrame frame) {
         this.p1 = p1;
         this.p2 = p2;
         this.frame = frame;
@@ -22,9 +22,9 @@ public class CheckWinner {
             return;
         }
 
-        System.out.println("Player 1 X: " + p1.getX() + " Player 2 X: " + p2.getX());
+        //System.out.println("Player 1 X: " + p1 + " Player 2 X: " + p2);
 
-        if (p1.getX() <= finish_line) {
+        if (p1 >= finish_line) {
             gameover = true;
             JOptionPane.showMessageDialog(frame, "Player 1 Wins!");
             long finishTime = System.currentTimeMillis() - startTime;
@@ -33,7 +33,7 @@ public class CheckWinner {
             JOptionPane.showMessageDialog(frame, "You finished in " + finishTime + " ms!");
             Leaderboard.showLeaderboard(frame);
             resetGame();
-        } else if (p2.getX() <= finish_line) {
+        } else if (p2 >= finish_line) {
             gameover = true;
             JOptionPane.showMessageDialog(frame, "Player 2 Wins!");
             long finishTime = System.currentTimeMillis() - startTime;
@@ -48,5 +48,6 @@ public class CheckWinner {
     private void resetGame() {
         frame.dispose();
         new Leaderboard(); // Can optionally display the leaderboard here, or just restart the game
+        new StartScreen();
     }
 }

@@ -53,7 +53,7 @@ public class ChooseAnimal extends JFrame {
         backgroundPanel.add(player1Label);
         player1Combo = new JComboBox<>(animals);
         player1Combo.setBounds(250, 490, 200, 30);
-        backgroundPanel.add(player1Combo);
+
 
         //Styling Player 2
         player2Image = new JLabel();
@@ -65,7 +65,6 @@ public class ChooseAnimal extends JFrame {
         backgroundPanel.add(player2Label);
         player2Combo = new JComboBox<>(animals);
         player2Combo.setBounds(950, 490, 200, 30);
-        backgroundPanel.add(player2Combo);
 
         player1Combo.addActionListener(e -> updateAnimalImage(player1Combo, player1Image));
         player2Combo.addActionListener(e -> updateAnimalImage(player2Combo, player2Image));
