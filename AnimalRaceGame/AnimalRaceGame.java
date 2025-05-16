@@ -18,12 +18,12 @@ public class AnimalRaceGame extends JFrame {
     private ArrayList<Obstacle> obstacles2;
 
     private int[][] obstaclePositions = {
-            {800, 100},  // Obstacle 1 for Player 1
-            {1400, 100}, // Obstacle 2 for Player 1
-            {2000, 100}, // Obstacle 3 for Player 1
-            {800, 350},  // Obstacle 1 for Player 2
-            {1400, 350}, // Obstacle 2 for Player 2
-            {2000, 350}  // Obstacle 3 for Player 2
+            {800, 256},  // Obstacle 1 for Player 1
+            {1400, 256}, // Obstacle 2 for Player 1
+            {2000, 256}, // Obstacle 3 for Player 1
+            {800, 505},  // Obstacle 1 for Player 2
+            {1400, 505}, // Obstacle 2 for Player 2
+            {2000, 505}  // Obstacle 3 for Player 2
     };
 
     public AnimalRaceGame(String p1Animal, String p2Animal) {
@@ -151,7 +151,7 @@ public class AnimalRaceGame extends JFrame {
 
         private void checkSpawnObstacle(int playerNumber, int playerX) {
             ArrayList<Obstacle> obstacles = (playerNumber == 1) ? obstacles1 : obstacles2;
-            int yPos = (playerNumber == 1) ? 100 : 350;
+            int yPos = (playerNumber == 1) ? 256 : 505;
             int[] positions = (playerNumber == 1) ? new int[]{800, 1400, 2000} : new int[]{800, 1400, 2000};
 
             for (int xPos : positions) {
